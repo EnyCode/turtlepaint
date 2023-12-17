@@ -43,6 +43,9 @@ class Brush():
 
     draw_data = [[(0, 0), 0, 0]]
 
+    # used for undo
+    buffer = []
+
     # out of bounds check
     def oob(self, x, y):
         if -self.screen.window_width() // 2 + 110 < x < self.screen.window_width() // 2 - 20 and -self.screen.window_height() // 2 + 20 < y < self.screen.window_height() // 2 - 50:

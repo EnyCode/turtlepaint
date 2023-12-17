@@ -51,7 +51,16 @@ def follow_mouse(event):
         brush.tool.follow_mouse(x, y, brush)
 
         dragging = False
+    
+def undo(event):
+    global brush, t, screen
 
+    if len(brush.buffer) > 0:
+        for x in range(brush.buffer[-1] + brush.tool.get_buffer()):
+            t.undo()
+        brush.buffer.pop()
+
+        screen.update()
 
 screen = turtle.Screen()
 screen.setup(1300, 900)
@@ -79,6 +88,9 @@ t.shape("circle")
 canvas.bind("<Motion>", follow_mouse)
 canvas.bind("<ButtonRelease-1>", brush_up)
 canvas.bind("<Configure>", lambda event : ui.draw_ui(brush))
+
+turtle.listen()
+turtle.onkey(lambda : undo(0), "z")
 
 # on click, put brush down
 # opposite on release
