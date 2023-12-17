@@ -89,7 +89,7 @@ class UiButton:
         t.left(90)
         t.forward(self.size - width * 2)
         t.left(90)
-        t.forward(3)
+        t.forward(width)
 
         t.pencolor(colors.shadow)
         t.forward(self.size - width * 3)
@@ -123,7 +123,7 @@ class UiButton:
         if name != "UiButton":
             print(name, "must override the paint_icon(self, t) function")
 
-class SaveButton(UiButton):
+class PressButton(UiButton):
     width = 80
     height = 30
 
@@ -172,3 +172,68 @@ class SaveButton(UiButton):
         t.forward(width)
         t.right(90)
         t.forward(width * 2)
+    
+    def paint_selected_button(self, t):
+        t.penup()
+        t.right(90)
+        t.forward(1)
+        t.left(90)
+        t.pendown()
+
+        width = t.width()
+
+        offset = 0
+
+        for y in range(9):
+            for x in range(26):
+                t.pencolor(colors.alpha_fill[(x + offset) % 2])
+                t.forward(width)
+            t.penup()
+            t.backward(width * 26)
+            t.right(90)
+            t.forward(width)
+            t.left(90)
+            t.pendown()
+            offset += 1
+        
+        t.pencolor(colors.glossy)
+        t.forward(self.width)
+        t.left(90)
+        t.forward(self.height)
+
+        t.left(90)
+        t.forward(3)
+        t.pencolor(colors.outline)
+        t.forward(self.width - width)
+        t.left(90)
+        t.forward(self.height - width)
+        t.left(90)
+        t.forward(width)
+
+        t.pencolor(colors.btn_fill)
+        t.forward(self.width - width * 2)
+        t.left(90)
+        t.forward(self.height - width * 2)
+        t.left(90)
+        t.forward(width)
+
+        t.pencolor(colors.shadow)
+        t.forward(self.width - width * 3)
+        t.left(90)
+        t.forward(self.height - width * 3)
+
+        # go to corner
+        t.penup()
+        t.left(90)
+        t.forward(self.width)
+        t.left(90)
+        t.forward(self.height - width * 2)
+        t.right(90)
+    
+class SaveButton(PressButton):
+    def paint_icon(self, t):
+        pass
+
+class LoadButton(PressButton):
+    def paint_icon(self, t):
+        pass
