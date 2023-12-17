@@ -1,5 +1,6 @@
 import config
 import turtle
+import math
 from abc import abstractmethod, abstractstaticmethod
 
 class Tool():
@@ -215,6 +216,8 @@ class LineTool(Tool):
             brush.t.penup()
             self.dragging = False
             self.preview.clear()
+
+            brush.screen.update()
     
     def follow_mouse(self, x, y, brush):
         if self.dragging:
@@ -270,6 +273,8 @@ class RectangleTool(Tool):
             distance_x = coords[0] - brush.t.pos()[0]
             distance_y = brush.t.pos()[1] - coords[1]
 
+            brush.t.setheading(0)
+
             for i in range(2):
                 brush.t.fd(distance_x)
                 brush.t.rt(90)
@@ -279,6 +284,8 @@ class RectangleTool(Tool):
             brush.t.penup()
             self.dragging = False
             self.preview.clear()
+
+            brush.screen.update()
 
     def follow_mouse(self, x, y, brush):
         if self.dragging:
@@ -335,12 +342,24 @@ class CircleTool(Tool):
             self.dragging = True
 
     def cursor_up(self, x, y, brush):
-        brush.t.penup()
-        brush.t.goto(self.click_pos)
-        brush.t.pendown()
-        brush.t.setheading(brush.t.towards(x, y) - 90)
-        brush.t.circle(round(brush.t.distance(x, y) / 2, 0))
-        brush.t.penup()
+        if self.dragging:
+            brush.t.penup()
+            brush.t.goto(self.click_pos)
+
+            difference = min(abs(x - self.click_pos[0]), abs(y - self.click_pos[1]))
+            c = math.pi * difference
+
+            brush.t.setheading(0) if x > self.click_pos[0] else brush.t.setheading(180)
+            brush.t.forward(difference / 2)
+            brush.t.pendown()
+            
+            for i in range(360):
+                brush.t.forward(c / 360)
+                brush.t.right(1) if x > self.click_pos[0] else brush.t.left(1)
+
+            self.preview.clear()
+
+            brush.screen.update()
         self.dragging = False
 
     def follow_mouse(self, x, y, brush):
@@ -350,9 +369,17 @@ class CircleTool(Tool):
             self.preview.width(brush.width)
 
             self.preview.goto(self.click_pos)
-            self.preview.setheading(self.preview.towards(x, y) - 90)
+            
+            difference = min(abs(x - self.click_pos[0]), abs(y - self.click_pos[1]))
+            c = math.pi * difference
+
+            self.preview.setheading(0) if x > self.click_pos[0] else self.preview.setheading(180)
+            self.preview.forward(difference / 2)
             self.preview.pendown()
-            self.preview.circle(round(self.preview.distance(x, y) / 2, 0), 360)
+
+            for i in range(360):
+                self.preview.forward(c / 360)
+                self.preview.right(1) if x > self.click_pos[0] else self.preview.left(1)
 
             brush.screen.update()
 
