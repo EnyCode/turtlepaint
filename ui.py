@@ -645,7 +645,16 @@ def draw_ui(brush):
     ui.left(90)
 
     save = SaveButton()
+    load = LoadButton()
     save.paint_button(ui)
+
+    ui.penup()
+    ui.backward(83)
+    ui.right(90)
+    ui.forward(36)
+    ui.left(90)
+
+    load.paint_button(ui)
 
     brush.screen.update()
 
