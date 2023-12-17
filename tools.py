@@ -214,6 +214,7 @@ class LineTool(Tool):
             brush.t.goto(min(max(x, -brush.screen.window_width() // 2 + 110), brush.screen.window_width() // 2 - 20), max(min(y, brush.screen.window_height() // 2 - 50), -brush.screen.window_height() // 2 + 20))
             brush.t.penup()
             self.dragging = False
+            self.preview.clear()
     
     def follow_mouse(self, x, y, brush):
         if self.dragging:
@@ -265,7 +266,7 @@ class RectangleTool(Tool):
         distance_x = x - brush.t.pos()[0]
         distance_y = brush.t.pos()[1] - y
 
-        for i in range(0, 2):
+        for i in range(2):
             brush.t.fd(distance_x)
             brush.t.rt(90)
             brush.t.fd(distance_y)
@@ -273,6 +274,7 @@ class RectangleTool(Tool):
 
         brush.t.penup()
         self.dragging = False
+        self.preview.clear()
 
     def follow_mouse(self, x, y, brush):
         if self.dragging:
@@ -285,10 +287,18 @@ class RectangleTool(Tool):
             distance_x = x - self.preview.pos()[0]
             distance_y = self.preview.pos()[1] - y
 
-            for i in range(0, 2):
-                self.preview.fd(distance_x)
+            for i in range(2):
+                for x in range(5):
+                    self.preview.penup()
+                    self.preview.fd(distance_x / 10)
+                    self.preview.pendown()
+                    self.preview.fd(distance_x / 10)
                 self.preview.rt(90)
-                self.preview.fd(distance_y)
+                for x in range(5):
+                    self.preview.penup()
+                    self.preview.fd(distance_y / 10)
+                    self.preview.pendown()
+                    self.preview.fd(distance_y / 10)
                 self.preview.rt(90)
 
             brush.screen.update()
