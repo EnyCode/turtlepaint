@@ -66,7 +66,6 @@ def save_canvas():
     # TODO: tell the user it has saved
 
     print("saving...")
-    print(brush.draw_data)
 
     with open("drawings/drawing.txt", "wb") as file:
         for i in range(0, len(brush.draw_data) - 1):
@@ -131,6 +130,8 @@ loading.hideturtle()
 
 loading.width(3)
 t.width(3)
+
+brush.loading = loading
 
 t.shapesize(0.25, 0.25)
 t.penup()
