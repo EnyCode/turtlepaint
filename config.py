@@ -31,6 +31,10 @@ class ToolList(Enum):
                 return EraserTool()
             case ToolList.LINE:
                 return LineTool()
+            case ToolList.RECTANGLE:
+                return RectangleTool()
+            case ToolList.CIRCLE:
+                return CircleTool()
 
 class Brush():
     width = 3

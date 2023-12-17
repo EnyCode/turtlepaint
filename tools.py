@@ -239,3 +239,105 @@ class LineTool(Tool):
     @staticmethod
     def get_index():
         return 2
+
+class RectangleTool(Tool):
+    click_pos = (0, 0)
+
+    dragging = False
+
+    preview = None
+
+    def __init__(self):
+        self.preview = turtle.Turtle()
+
+    def cursor_down(self, x, y, brush):
+        if not brush.oob(x, y):
+            brush.t.penup()
+            brush.t.setpos(x, y)
+            self.click_pos = brush.t.pos()
+            self.dragging = True
+
+    def cursor_up(self, x, y, brush):
+        brush.t.penup()
+        brush.t.goto(self.click_pos)
+        brush.t.pendown()
+
+        distance_x = x - brush.t.pos()[0]
+        distance_y = brush.t.pos()[1] - y
+
+        for i in range(0, 2):
+            brush.t.fd(distance_x)
+            brush.t.rt(90)
+            brush.t.fd(distance_y)
+            brush.t.rt(90)
+
+        brush.t.penup()
+        self.dragging = False
+
+    def follow_mouse(self, x, y, brush):
+        if self.dragging:
+            self.preview.penup()
+            self.preview.clear()
+            self.preview.width(brush.width)
+
+            self.preview.goto(self.click_pos)
+            self.preview.pendown()
+            distance_x = x - self.preview.pos()[0]
+            distance_y = self.preview.pos()[1] - y
+
+            for i in range(0, 2):
+                self.preview.fd(distance_x)
+                self.preview.rt(90)
+                self.preview.fd(distance_y)
+                self.preview.rt(90)
+
+            brush.screen.update()
+
+    @staticmethod
+    def get_index():
+        return 3
+
+
+
+class CircleTool(Tool):
+    click_pos = (0, 0)
+
+    dragging = False
+
+    preview = None
+
+    def __init__(self):
+        self.preview = turtle.Turtle()
+
+    def cursor_down(self, x, y, brush):
+        if not brush.oob(x, y):
+            brush.t.penup()
+            brush.t.setpos(x, y)
+            self.click_pos = brush.t.pos()
+            self.dragging = True
+
+    def cursor_up(self, x, y, brush):
+        brush.t.penup()
+        brush.t.goto(self.click_pos)
+        brush.t.pendown()
+        brush.t.setheading(brush.t.towards(x, y) - 90)
+        brush.t.circle(round(brush.t.distance(x, y) / 2, 0))
+        brush.t.penup()
+        self.dragging = False
+
+    def follow_mouse(self, x, y, brush):
+        if self.dragging:
+            self.preview.penup()
+            self.preview.clear()
+            self.preview.width(brush.width)
+
+            self.preview.goto(self.click_pos)
+            self.preview.setheading(self.preview.towards(x, y) - 90)
+            self.preview.pendown()
+            self.preview.circle(round(self.preview.distance(x, y) / 2, 0), 360)
+
+            brush.screen.update()
+
+    @staticmethod
+    def get_index():
+        return 4
