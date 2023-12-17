@@ -10,7 +10,7 @@ def save_canvas(brush):
 
     print("saving...")
 
-    with fd.asksaveasfile(mode="wb", filetypes=[("Turtle Paint File", "tpf")]) as file:
+    with fd.asksaveasfile(mode="wb", filetypes=[("Turtle Paint File", ".tpf")]) as file:
         for i in range(0, len(brush.draw_data) - 1):
             try:
                 if brush.draw_data[i][0] == brush.draw_data[i + 1][0]:
@@ -26,7 +26,7 @@ def load_canvas(brush):
     print("loading...")
     brush.t.clear()
     brush.loading.clear()
-    with fd.askopenfile(mode="rb", filetypes=[("Turtle Paint File", "tpf")]) as file:
+    with fd.askopenfile(mode="rb", filetypes=[("Turtle Paint File", ".tpf")]) as file:
         file_data = pickle.load(file)
         brush.loading.penup()
         brush.loading.goto(file_data[0][0])
