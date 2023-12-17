@@ -53,67 +53,6 @@ def follow_mouse(event):
         dragging = False
 
 
-def clear_canvas():
-    global brush
-    t.clear()
-    loading.clear()
-    if len(brush.draw_data) >= 1:
-        brush.draw_data = [[(0, 0), 0, 0]]
-
-
-def save_canvas():
-    global brush
-    # TODO: tell the user it has saved
-
-    print("saving...")
-
-    with open("drawings/drawing.txt", "wb") as file:
-        for i in range(0, len(brush.draw_data) - 1):
-            try:
-                if brush.draw_data[i][0] == brush.draw_data[i + 1][0]:
-                    brush.draw_data.pop(i)
-            except IndexError:
-                break
-        pickle.dump(brush.draw_data, file)
-    time.sleep(1)
-    print("saved")
-
-
-def load_canvas():
-    print("loading...")
-    clear_canvas()
-    if os.path.isfile("drawings/drawing.txt"):
-        global loading, brush, screen
-        with open("drawings/drawing.txt", "rb") as file:
-            file_data = pickle.load(file)
-            loading.penup()
-            loading.goto(file_data[0][0])
-            loading.pencolor(colors[file_data[0][1]])
-            loading.width(file_data[0][2])
-            file_data.pop(0)
-
-            loading.speed('fastest')
-
-            for data in file_data:
-                if data[2] == 0:
-                    loading.penup()
-                loading.goto(data[0])
-                if data[2] != 0:
-                    loading.pendown()
-                loading.pencolor(colors[data[1]])
-                loading.width(data[2])
-
-            screen.update()
-
-            brush.draw_data = file_data
-    else:
-        print("File not found")
-    print("loaded")
-    loading.hideturtle()
-
-    ui.draw_ui(brush)
-
-
 screen = turtle.Screen()
 screen.setup(1300, 900)
 screen.tracer(0)
@@ -144,11 +83,6 @@ canvas.bind("<Configure>", lambda event : ui.draw_ui(brush))
 # on click, put brush down
 # opposite on release
 turtle.onscreenclick(brush_down)
-
-turtle.listen()
-turtle.onkey(save_canvas, "s")
-turtle.onkey(load_canvas, "l")
-turtle.onkey(clear_canvas, "c")
 
 t.speed(-1)
 
