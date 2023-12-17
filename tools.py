@@ -42,6 +42,31 @@ class Tool():
         """
         return NotImplementedError
 
+    @abstractmethod
+    def get_index():
+        """
+        Return the index of the tool in the list
+
+        Keyword arguments:
+        self -- the tool
+        
+        Returns:
+        the index of the tool (int)
+        """
+        return NotImplementedError
+
+    @abstractmethod
+    def get_buffer(self):
+        """
+        Return the undo buffer for the tool
+        
+        Keyword arguments:
+        self -- the tool
+        
+        Returns:
+        the undo buffer (int)
+        """
+
 class PencilTool(Tool):
     # is the turtle pen down
     pen_down = False
@@ -51,21 +76,31 @@ class PencilTool(Tool):
     # used to check if the cursor hasnt moved for dots
     click_pos = (0, 0)
 
+    # used for undo
+    buffer = 0
+
     def cursor_down(self, x, y, brush):
         if not brush.oob(x, y):
             self.pen_down = True
             self.mouse_down = True
             brush.t.pendown()
             self.click_pos = brush.t.pos()
+            self.buffer = 1
     
     def cursor_up(self, x, y, brush):
         self.pen_down = False
         self.mouse_down = False
         brush.t.penup()
+        self.buffer += 1
 
         # draw a dot if the mouse hasnt moved
         if (x, y) == self.click_pos:
             brush.t.dot(size = int(brush.width * 1.5))
+            self.buffer += 1
+        
+        brush.buffer.append(self.buffer)
+
+        print(brush.buffer)
     
     def follow_mouse(self, x, y, brush):
         if not self.pen_down and brush.draw_data[-1][2] == 0:
@@ -75,15 +110,22 @@ class PencilTool(Tool):
 
         if brush.oob(x, y):
             brush.t.penup()
+            self.buffer += 1
             self.pen_down = False
         elif self.pen_down == False and self.mouse_down:
             self.pen_down = True
             brush.t.pendown()
+            self.buffer += 1
         
         # teleport the turtle
         brush.t.setpos(x, y)
 
+        self.buffer += 1
+
         brush.screen.update()
+    
+    def get_buffer(self):
+        return self.buffer - 2
             
     
     # used for buttons
