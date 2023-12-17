@@ -259,22 +259,26 @@ class RectangleTool(Tool):
             self.dragging = True
 
     def cursor_up(self, x, y, brush):
-        brush.t.penup()
-        brush.t.goto(self.click_pos)
-        brush.t.pendown()
+        if self.dragging:
+            brush.t.penup()
+            brush.t.goto(self.click_pos)
+            brush.t.pendown()
 
-        distance_x = x - brush.t.pos()[0]
-        distance_y = brush.t.pos()[1] - y
+            # dont go on the ui
+            coords = (min(max(x, -brush.screen.window_width() // 2 + 110), brush.screen.window_width() // 2 - 20), max(min(y, brush.screen.window_height() // 2 - 50), -brush.screen.window_height() // 2 + 20))
 
-        for i in range(2):
-            brush.t.fd(distance_x)
-            brush.t.rt(90)
-            brush.t.fd(distance_y)
-            brush.t.rt(90)
+            distance_x = coords[0] - brush.t.pos()[0]
+            distance_y = brush.t.pos()[1] - coords[1]
 
-        brush.t.penup()
-        self.dragging = False
-        self.preview.clear()
+            for i in range(2):
+                brush.t.fd(distance_x)
+                brush.t.rt(90)
+                brush.t.fd(distance_y)
+                brush.t.rt(90)
+
+            brush.t.penup()
+            self.dragging = False
+            self.preview.clear()
 
     def follow_mouse(self, x, y, brush):
         if self.dragging:
@@ -284,8 +288,12 @@ class RectangleTool(Tool):
 
             self.preview.goto(self.click_pos)
             self.preview.pendown()
-            distance_x = x - self.preview.pos()[0]
-            distance_y = self.preview.pos()[1] - y
+
+            # dont go on the ui
+            coords = (min(max(x, -brush.screen.window_width() // 2 + 110), brush.screen.window_width() // 2 - 20), max(min(y, brush.screen.window_height() // 2 - 50), -brush.screen.window_height() // 2 + 20))
+
+            distance_x = coords[0] - self.preview.pos()[0]
+            distance_y = self.preview.pos()[1] - coords[1]
 
             for i in range(2):
                 for x in range(5):
