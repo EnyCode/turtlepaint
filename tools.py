@@ -65,7 +65,7 @@ class PencilTool(Tool):
 
         # draw a dot if the mouse hasnt moved
         if (x, y) == self.click_pos:
-            brush.t.dot(size = brush.width * 2 - 1)
+            brush.t.dot(size = int(brush.width * 1.5))
     
     def follow_mouse(self, x, y, brush):
         if not self.pen_down and brush.draw_data[-1][2] == 0:
