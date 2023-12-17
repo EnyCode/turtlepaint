@@ -39,6 +39,7 @@ class Brush():
 
     screen = None
     t = None
+    loading = None
 
     draw_data = [[(0, 0), 0, 0]]
 
