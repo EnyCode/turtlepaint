@@ -213,6 +213,8 @@ class LineTool(Tool):
 
     def cursor_down(self, x, y, brush: "brush.Brush"):
         if not brush.oob(x, y):
+            brush.draw_data.append([(x - 1, y - 1), brush.color, 0])
+            brush.draw_data.append([(x, y), brush.color, brush.width])
             brush.t.penup()
             brush.t.setpos(x, y)
             self.click_pos = brush.t.pos()
@@ -233,6 +235,8 @@ class LineTool(Tool):
             brush.screen.update()
 
             push_undo(self.buffer, brush)
+
+            brush.draw_data.append([(x, y), brush.color, brush.width])
 
             print(brush.buffer)
     

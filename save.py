@@ -22,18 +22,17 @@ def save_canvas(brush: Brush):
                 except IndexError:
                     break
             pickle.dump(brush.draw_data, file)
-    time.sleep(1)
     print("saved")
 
 
 def load_canvas(brush: Brush):
     print("loading...")
-    brush.t.clear()
-    brush.loading.clear()
     file = fd.askopenfile(mode="rb", filetypes=[("Turtle Paint File", ".tpf")])
     if file is None:
         print("cancelled...")
     else:
+        brush.t.clear()
+        brush.loading.clear()
         with file:
             file_data = pickle.load(file)
             brush.loading.penup()
