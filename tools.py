@@ -407,9 +407,11 @@ class CircleTool(Tool):
 
             self.preview.setheading(0) if x > self.click_pos[0] else self.preview.setheading(180)
             self.preview.forward(difference / 2)
-            self.preview.pendown()
 
             for i in range(360):
+                if i % 5 == 0:
+                    self.preview.penup() if self.preview.pen()["pendown"] else self.preview.pendown()
+
                 self.preview.forward(c / 360)
                 self.preview.right(1) if x > self.click_pos[0] else self.preview.left(1)
 
