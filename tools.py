@@ -117,6 +117,10 @@ class PencilTool(Tool):
     @staticmethod
     def get_index():
         return 0
+    
+    @staticmethod
+    def show_turtle():
+        return True
 
 class EraserTool(Tool):
     # is the turtle pen down

@@ -701,12 +701,19 @@ def on_click(x: float, y: float, brush: Brush):
             brush.draw_data = [[(0, 0), 0, 0]]
             brush.t.clear()
             brush.loading.clear()
-            brush.buffer = []
+            brush.buffer = [0]
         else:
             if len(brush.buffer) > 0:
                 brush.buffer[-1] += brush.tool.get_buffer() - 2
 
             brush.tool = ToolList(column * 2 + row).get_tool()
+
+            if brush.tool.show_turtle() and not brush.t.isvisible():
+                brush.buffer[-1] += 1
+                brush.t.showturtle()
+            elif not brush.tool.show_turtle() and brush.t.isvisible():
+                brush.buffer[-1] += 1
+                brush.t.hideturtle()
 
             ui.penup()
             ui.goto(button_coords)
