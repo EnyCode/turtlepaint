@@ -1,20 +1,21 @@
-import config as colors
+from turtle import Turtle
+from colors import *
 
 class UiButton:
-    size = 43
+    size: int = 43
 
-    def paint_button(self, t):
-        width = t.width()
+    def paint_button(self, t: Turtle):
+        width: int = t.width()
 
         # glossy (top and left)
-        t.pencolor(colors.glossy)
+        t.pencolor(glossy)
         t.right(90)
         t.forward(self.size)
         t.left(180)
         t.pendown()
 
         # draw the glossy
-        t.fillcolor(colors.btn_fill)
+        t.fillcolor(btn_fill)
         t.begin_fill()
 
         for x in range(2):
@@ -22,7 +23,7 @@ class UiButton:
             t.right(90)
 
         # draw the outline
-        t.pencolor(colors.outline)
+        t.pencolor(outline)
         for x in range(2):
             t.forward(self.size)
             t.right(90)
@@ -35,7 +36,7 @@ class UiButton:
         t.forward(width)
 
         # draw shadow
-        t.pencolor(colors.shadow)
+        t.pencolor(shadow)
         t.pendown()
         t.forward(self.size - width * 2)
         t.left(90)
@@ -47,7 +48,7 @@ class UiButton:
         t.right(90)
         t.forward(width * 2)
 
-    def paint_selected_button(self, t):
+    def paint_selected_button(self, t: Turtle):
         t.penup()
         t.right(90)
         t.forward(1)
@@ -60,7 +61,7 @@ class UiButton:
 
         for y in range(14):
             for x in range(14):
-                t.pencolor(colors.alpha_fill[(x + offset) % 2])
+                t.pencolor(alpha_fill[(x + offset) % 2])
                 t.forward(width)
             t.penup()
             t.backward(width * 14)
@@ -70,28 +71,28 @@ class UiButton:
             t.pendown()
             offset += 1
 
-        t.pencolor(colors.glossy)
+        t.pencolor(glossy)
         t.forward(self.size)
         t.left(90)
         t.forward(self.size)
         
         t.left(90)
         t.forward(3)
-        t.pencolor(colors.outline)
+        t.pencolor(outline)
         t.forward(self.size - width)
         t.left(90)
         t.forward(self.size - width)
         t.left(90)
         t.forward(width)
         
-        t.pencolor(colors.btn_fill)
+        t.pencolor(btn_fill)
         t.forward(self.size - width * 2)
         t.left(90)
         t.forward(self.size - width * 2)
         t.left(90)
         t.forward(width)
 
-        t.pencolor(colors.shadow)
+        t.pencolor(shadow)
         t.forward(self.size - width * 3)
         t.left(90)
         t.forward(self.size - width * 3)
@@ -104,7 +105,7 @@ class UiButton:
         t.forward(self.size - width * 2)
         t.right(90)
 
-    def paint_icon(self, t):
+    def paint_icon(self, t: Turtle):
         """
         paint_icon(self, t)
             paints the icon for a button
@@ -112,33 +113,33 @@ class UiButton:
         the turtle will start in the top right and must end in the top right
         """
 
-        name = type(self).__name__
+        name: str = type(self).__name__
 
         if name != "UiButton":
             print(name, "must override the paint_icon(self, t) function")
 
     def on_click(self):
-        name = type(self).__name__
+        name: str = type(self).__name__
 
         if name != "UiButton":
             print(name, "must override the paint_icon(self, t) function")
 
 class PressButton(UiButton):
-    width = 80
-    height = 30
+    width: int = 80
+    height: int = 30
 
-    def paint_button(self, t):
+    def paint_button(self, t: Turtle):
         width = t.width()
 
         # glossy (top and left)
-        t.pencolor(colors.glossy)
+        t.pencolor(glossy)
         t.right(90)
         t.forward(self.height)
         t.left(180)
         t.pendown()
 
         # draw the glossy
-        t.fillcolor(colors.btn_fill)
+        t.fillcolor(btn_fill)
         t.begin_fill()
 
         t.forward(self.height)
@@ -147,7 +148,7 @@ class PressButton(UiButton):
         t.right(90)
 
         # draw the outline
-        t.pencolor(colors.outline)
+        t.pencolor(outline)
         t.forward(self.height)
         t.right(90)
         t.forward(self.width)
@@ -161,7 +162,7 @@ class PressButton(UiButton):
         t.forward(width)
 
         # draw shadow
-        t.pencolor(colors.shadow)
+        t.pencolor(shadow)
         t.pendown()
         t.forward(self.width - width * 2)
         t.left(90)
@@ -173,7 +174,7 @@ class PressButton(UiButton):
         t.right(90)
         t.forward(width * 2)
     
-    def paint_selected_button(self, t):
+    def paint_selected_button(self, t: Turtle):
         t.penup()
         t.right(90)
         t.forward(1)
@@ -186,7 +187,7 @@ class PressButton(UiButton):
 
         for y in range(9):
             for x in range(26):
-                t.pencolor(colors.alpha_fill[(x + offset) % 2])
+                t.pencolor(alpha_fill[(x + offset) % 2])
                 t.forward(width)
             t.penup()
             t.backward(width * 26)
@@ -196,28 +197,28 @@ class PressButton(UiButton):
             t.pendown()
             offset += 1
         
-        t.pencolor(colors.glossy)
+        t.pencolor(glossy)
         t.forward(self.width)
         t.left(90)
         t.forward(self.height)
 
         t.left(90)
         t.forward(3)
-        t.pencolor(colors.outline)
+        t.pencolor(outline)
         t.forward(self.width - width)
         t.left(90)
         t.forward(self.height - width)
         t.left(90)
         t.forward(width)
 
-        t.pencolor(colors.btn_fill)
+        t.pencolor(btn_fill)
         t.forward(self.width - width * 2)
         t.left(90)
         t.forward(self.height - width * 2)
         t.left(90)
         t.forward(width)
 
-        t.pencolor(colors.shadow)
+        t.pencolor(shadow)
         t.forward(self.width - width * 3)
         t.left(90)
         t.forward(self.height - width * 3)
@@ -229,11 +230,14 @@ class PressButton(UiButton):
         t.left(90)
         t.forward(self.height - width * 2)
         t.right(90)
-    
+
+# button list
+buttons: list[UiButton] = [UiButton(), UiButton(), UiButton(), UiButton(), UiButton(), UiButton()]
+
 class SaveButton(PressButton):
-    def paint_icon(self, t):
+    def paint_icon(self, t: Turtle):
         pass
 
 class LoadButton(PressButton):
-    def paint_icon(self, t):
+    def paint_icon(self, t: Turtle):
         pass

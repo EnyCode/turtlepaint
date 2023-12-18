@@ -1,8 +1,11 @@
 import turtle
 import math
 import save
-from config import *
+from colors import *
+from buttons import *
 from tkinter import Event
+from brush import Brush
+from tools import ToolList
 
 ui: turtle.Turtle = turtle.Turtle()
 
@@ -13,21 +16,21 @@ ui.speed(-1)
 #screen.title("Turtle Paint")
 #screen.setup(1300, 900)
 
-cl_size: int = 30
+cl_size = 30
 
 # we need this to fix a recursion bug
-dragging: bool = False
+dragging = False
 
 # coordinates
 # these are stored for each updated component so we can quickly
 # teleport back and update it
-color_coords: (float, float) = (0, 0)
-button_coords: (float, float) = (0, 0)
-width_coords: (float, float) = (0, 0)
+color_coords = (0., 0.)
+button_coords = (0., 0.)
+width_coords = (0., 0.)
 
 # slider information 
-slider_dragged: bool = False
-slider_pos: (float, float) = (0, 0)
+slider_dragged = False
+slider_pos = (0., 0.)
 
 #cv = screen.getcanvas()
 #cv.bind("<Configure>", lambda event : draw_ui())
@@ -754,7 +757,7 @@ def drag_slider(x: float, y, brush: Brush):
     if slider_dragged:
         adjust = min(61, max(0, x - width_coords[0] - 6))
 
-        brush.width = adjust // 10
+        brush.width = int(adjust // 10)
 
         brush.t.width(brush.width)
 
