@@ -86,11 +86,12 @@ class PencilTool(Tool):
         print(brush.buffer)
     
     def follow_mouse(self, x, y, brush: "brush.Brush"):
-        if not self.pen_down and brush.draw_data[-1][2] == 0:
-            pass
-        else:
-            brush.draw_data.append([brush.t.pos(), brush.color, brush.width if self.pen_down else 0])
-            self.save_buffer += 1
+        if len(brush.draw_data) > 0:
+            if not self.pen_down and brush.draw_data[-1][2] == 0:
+                pass
+            else:
+                brush.draw_data.append([brush.t.pos(), brush.color, brush.width if self.pen_down else 0])
+                self.save_buffer += 1
 
         if brush.oob(x, y):
             brush.t.penup()
