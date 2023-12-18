@@ -368,6 +368,10 @@ class CircleTool(Tool):
             difference = min(abs(x - self.click_pos[0]), abs(y - self.click_pos[1]))
             c = math.pi * difference
 
+            if y > self.click_pos[1]:
+                brush.t.setheading(90)
+                brush.t.forward(difference)
+
             brush.t.setheading(0) if x > self.click_pos[0] else brush.t.setheading(180)
             brush.t.forward(difference / 2)
             brush.t.pendown()
@@ -396,6 +400,10 @@ class CircleTool(Tool):
             
             difference = min(abs(x - self.click_pos[0]), abs(y - self.click_pos[1]))
             c = math.pi * difference
+
+            if y > self.click_pos[1]:
+                self.preview.setheading(90)
+                self.preview.forward(difference)
 
             self.preview.setheading(0) if x > self.click_pos[0] else self.preview.setheading(180)
             self.preview.forward(difference / 2)
