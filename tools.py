@@ -67,6 +67,15 @@ class Tool():
         Returns:
         the undo buffer (int)
         """
+    
+    def reset_buffer(self):
+        """
+        Reset the move buffer
+        
+        Keyword arguments:
+        self -- the tool
+        """
+        pass
 
 class PencilTool(Tool):
     # is the turtle pen down
@@ -79,28 +88,33 @@ class PencilTool(Tool):
 
     # used for undo
     buffer = 0
+    move_buffer = 0
 
     def cursor_down(self, x, y, brush):
         if not brush.oob(x, y):
+            print(brush.t.undobufferentries() - self.move_buffer)
             self.pen_down = True
             self.mouse_down = True
             brush.t.pendown()
             self.click_pos = brush.t.pos()
-            self.buffer = 1
+            self.buffer = 1 + self.move_buffer
     
     def cursor_up(self, x, y, brush):
         self.pen_down = False
         self.mouse_down = False
         brush.t.penup()
         self.buffer += 1
+        self.move_buffer = 0
 
         # draw a dot if the mouse hasnt moved
         if (x, y) == self.click_pos:
-            brush.t.dot(size = int(brush.width * 1.5))
+            brush.t.dot()
             self.buffer += 1
         
-        brush.buffer.append(self.buffer)
+        #brush.buffer.append(self.buffer)
+        push_undo(self.buffer, brush)
 
+        print(brush.t.undobufferentries())
         print(brush.buffer)
     
     def follow_mouse(self, x, y, brush):
@@ -117,6 +131,7 @@ class PencilTool(Tool):
             self.pen_down = True
             brush.t.pendown()
             self.buffer += 1
+        self.move_buffer += 1
         
         # teleport the turtle
         brush.t.setpos(x, y)
@@ -126,7 +141,10 @@ class PencilTool(Tool):
         brush.screen.update()
     
     def get_buffer(self):
-        return self.buffer - 2
+        return self.move_buffer
+
+    def reset_buffer(self):
+        self.move_buffer = 0
             
     
     # used for buttons
@@ -143,6 +161,10 @@ class EraserTool(Tool):
     # used to check if the cursor hasnt moved for dots
     click_pos = (0, 0)
 
+    # used for undo
+    buffer = 0
+    move_buffer = 0
+
     def cursor_down(self, x, y, brush):
         brush.t.pencolor("white")
         brush.t.width(brush.width * 2)
@@ -152,12 +174,15 @@ class EraserTool(Tool):
             self.mouse_down = True
             brush.t.pendown()
             self.click_pos = brush.t.pos()
+            self.buffer = 1 + self.move_buffer
     
     def cursor_up(self, x, y, brush):
         self.pen_down = False
         self.mouse_down = False
         brush.t.penup()
         brush.t.width(brush.width)
+        self.buffer += 1
+        self.move_buffer = 0
 
         # draw a dot if the mouse hasnt moved
         if (x, y) == self.click_pos:
@@ -196,6 +221,9 @@ class LineTool(Tool):
 
     preview = None
 
+    # used for undo
+    buffer = 0
+
     def __init__(self):
         self.preview = turtle.Turtle()
         self.preview.hideturtle()
@@ -206,6 +234,7 @@ class LineTool(Tool):
             brush.t.setpos(x, y)
             self.click_pos = brush.t.pos()
             self.dragging = True
+            self.buffer = 0
     
     def cursor_up(self, x, y, brush):
         if self.dragging:
@@ -214,10 +243,15 @@ class LineTool(Tool):
             brush.t.pendown()
             brush.t.goto(min(max(x, -brush.screen.window_width() // 2 + 110), brush.screen.window_width() // 2 - 20), max(min(y, brush.screen.window_height() // 2 - 50), -brush.screen.window_height() // 2 + 20))
             brush.t.penup()
+            self.buffer += 5
             self.dragging = False
             self.preview.clear()
 
             brush.screen.update()
+
+            push_undo(self.buffer, brush)
+
+            print(brush.buffer)
     
     def follow_mouse(self, x, y, brush):
         if self.dragging:
@@ -239,7 +273,9 @@ class LineTool(Tool):
 
             brush.screen.update()
         
-    
+    def get_buffer(self):
+        return 0
+
     @staticmethod
     def get_index():
         return 2
@@ -285,6 +321,10 @@ class RectangleTool(Tool):
             self.dragging = False
             self.preview.clear()
 
+            push_undo(12, brush)
+
+            print(brush.buffer)
+
             brush.screen.update()
 
     def follow_mouse(self, x, y, brush):
@@ -317,6 +357,9 @@ class RectangleTool(Tool):
                 self.preview.rt(90)
 
             brush.screen.update()
+    
+    def get_buffer(self):
+        return 0
 
     @staticmethod
     def get_index():
@@ -336,6 +379,7 @@ class CircleTool(Tool):
 
     def cursor_down(self, x, y, brush):
         if not brush.oob(x, y):
+            print(brush.t.undobufferentries())
             brush.t.penup()
             brush.t.setpos(x, y)
             self.click_pos = brush.t.pos()
@@ -360,6 +404,10 @@ class CircleTool(Tool):
             self.preview.clear()
 
             brush.screen.update()
+
+            push_undo(725, brush)
+
+            print(brush.buffer)
         self.dragging = False
 
     def follow_mouse(self, x, y, brush):
@@ -382,7 +430,15 @@ class CircleTool(Tool):
                 self.preview.right(1) if x > self.click_pos[0] else self.preview.left(1)
 
             brush.screen.update()
+    
+    def get_buffer(self):
+        return 0
 
     @staticmethod
     def get_index():
         return 4
+
+def push_undo(value, brush):
+    if sum(brush.buffer) + value > 10000:
+        brush.buffer.pop(0)
+    brush.buffer.append(value)

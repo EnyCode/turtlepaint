@@ -56,9 +56,11 @@ def undo(event):
     global brush, t, screen
 
     if len(brush.buffer) > 0:
+        print(brush.buffer, brush.tool.get_buffer())
         for x in range(brush.buffer[-1] + brush.tool.get_buffer()):
             t.undo()
         brush.buffer.pop()
+        brush.tool.reset_buffer()
 
         screen.update()
 
@@ -78,6 +80,7 @@ loading.hideturtle()
 
 loading.width(3)
 t.width(3)
+t.setundobuffer(10000)
 
 brush.loading = loading
 

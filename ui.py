@@ -697,7 +697,8 @@ def on_click(x, y, screen, t, brush):
             brush.t.clear()
             brush.loading.clear()
         else:
-            brush.buffer[-1] += brush.tool.get_buffer() - 2
+            if len(brush.buffer) > 0:
+                brush.buffer[-1] += brush.tool.get_buffer() - 2
 
             brush.tool = ToolList(column * 2 + row).get_tool()
 
