@@ -691,25 +691,33 @@ def on_click(x, y, screen, t, brush):
     elif (-screen.window_width() // 2 + 7) < x < (-screen.window_width() // 2 + 99) and (screen.window_height() // 2 - 194) < y < (screen.window_height() // 2 - 56):
         column = 2 - math.floor((y - (screen.window_height() // 2 - 194)) / 46)
         row = math.floor((x - (-screen.window_width() // 2 + 7)) / 46)
-        brush.tool = ToolList(column * 2 + row).get_tool()
 
-        ui.penup()
-        ui.goto(button_coords)
+        if column * 2 + row == 5:
+            brush.draw_data = [[(0, 0), 0, 0]]
+            brush.t.clear()
+            brush.loading.clear()
+        else:
+            brush.buffer[-1] += brush.tool.get_buffer() - 2
 
-        # draw the buttons again
-        rows = math.ceil(len(buttons) / 2)
+            brush.tool = ToolList(column * 2 + row).get_tool()
 
-        for row in range(rows):
-            for button in buttons[(row * 2):(row * 2 + 2)]:
-                if buttons.index(button) == brush.tool.get_index():
-                    button.paint_selected_button(ui)
-                else: 
-                    button.paint_button(ui)
-                button.paint_icon(ui)
-            ui.backward(46 * 2)
-            ui.right(90)
-            ui.forward(46)
-            ui.left(90)
+            ui.penup()
+            ui.goto(button_coords)
+
+            # draw the buttons again
+            rows = math.ceil(len(buttons) / 2)
+
+            for row in range(rows):
+                for button in buttons[(row * 2):(row * 2 + 2)]:
+                    if buttons.index(button) == brush.tool.get_index():
+                        button.paint_selected_button(ui)
+                    else: 
+                        button.paint_button(ui)
+                    button.paint_icon(ui)
+                ui.backward(46 * 2)
+                ui.right(90)
+                ui.forward(46)
+                ui.left(90)
 
         screen.update()
     
