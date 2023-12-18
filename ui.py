@@ -714,6 +714,9 @@ def on_click(x: float, y: float, brush: Brush):
             elif not brush.tool.show_turtle() and brush.t.isvisible():
                 brush.buffer[-1] += 1
                 brush.t.hideturtle()
+            
+            brush.t.width(brush.width)
+            brush.t.pencolor(colors[brush.color])
 
             ui.penup()
             ui.goto(button_coords)

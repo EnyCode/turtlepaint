@@ -136,7 +136,6 @@ class EraserTool(Tool):
     move_buffer: int = 0
 
     def cursor_down(self, x, y, brush: "brush.Brush"):
-        print(x)
         brush.t.pencolor("white")
         brush.t.width(brush.width * 2)
 
@@ -213,7 +212,7 @@ class LineTool(Tool):
 
     def cursor_down(self, x, y, brush: "brush.Brush"):
         if not brush.oob(x, y):
-            brush.draw_data.append([(x - 1, y - 1), brush.color, 0])
+            #brush.draw_data.append([(0, 0), brush.color, 0])
             brush.draw_data.append([(x, y), brush.color, brush.width])
             brush.t.penup()
             brush.t.setpos(x, y)
@@ -226,7 +225,8 @@ class LineTool(Tool):
             brush.t.penup()
             brush.t.goto(self.click_pos)
             brush.t.pendown()
-            brush.t.goto(min(max(x, -brush.screen.window_width() // 2 + 110), brush.screen.window_width() // 2 - 20), max(min(y, brush.screen.window_height() // 2 - 50), -brush.screen.window_height() // 2 + 20))
+            coords = min(max(x, -brush.screen.window_width() // 2 + 110), brush.screen.window_width() // 2 - 20), max(min(y, brush.screen.window_height() // 2 - 50), -brush.screen.window_height() // 2 + 20)
+            brush.t.goto(coords)
             brush.t.penup()
             self.buffer += 5
             self.dragging = False
@@ -236,7 +236,8 @@ class LineTool(Tool):
 
             push_undo(self.buffer, brush)
 
-            brush.draw_data.append([(x, y), brush.color, brush.width])
+            brush.draw_data.append([coords, brush.color, brush.width])
+            brush.draw_data.append([coords, brush.color, 0])
 
             print(brush.buffer)
     
@@ -281,6 +282,7 @@ class RectangleTool(Tool):
 
     def cursor_down(self, x, y, brush: "brush.Brush"):
         if not brush.oob(x, y):
+            brush.draw_data.append([(x, y), brush.color, brush.width])
             brush.t.penup()
             brush.t.setpos(x, y)
             self.click_pos = brush.t.pos()
@@ -302,9 +304,12 @@ class RectangleTool(Tool):
 
             for i in range(2):
                 brush.t.fd(distance_x)
+                brush.draw_data.append([brush.t.pos(), brush.color, brush.width])
                 brush.t.rt(90)
                 brush.t.fd(distance_y)
+                brush.draw_data.append([brush.t.pos(), brush.color, brush.width])
                 brush.t.rt(90)
+            brush.draw_data.append([brush.t.pos(), brush.color, 0])
 
             brush.t.penup()
             self.dragging = False
@@ -391,10 +396,14 @@ class CircleTool(Tool):
             brush.t.setheading(0) if x > self.click_pos[0] else brush.t.setheading(180)
             brush.t.forward(difference / 2)
             brush.t.pendown()
+
+            brush.draw_data.append([brush.t.pos(), brush.color, brush.width])
             
             for i in range(360):
                 brush.t.forward(c / 360)
+                brush.draw_data.append([brush.t.pos(), brush.color, brush.width])
                 brush.t.right(1) if x > self.click_pos[0] else brush.t.left(1)
+            brush.draw_data.append([brush.t.pos(), brush.color, 0])
 
             self.preview.clear()
 

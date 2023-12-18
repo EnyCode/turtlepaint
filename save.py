@@ -14,13 +14,16 @@ def save_canvas(brush: Brush):
     if file is None:
         print("cancelled...")
     else:
+        print(brush.draw_data)
         with file:
             for i in range(0, len(brush.draw_data) - 1):
                 try:
-                    if brush.draw_data[i][0] == brush.draw_data[i + 1][0]:
+                    if brush.draw_data[i][0] == brush.draw_data[i + 1][0] and brush.draw_data[i][2] == brush.draw_data[i + 1][2]:
                         brush.draw_data.pop(i)
                 except IndexError:
                     break
+            print("after")
+            print(brush.draw_data)
             pickle.dump(brush.draw_data, file)
     print("saved")
 
