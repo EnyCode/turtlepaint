@@ -142,6 +142,7 @@ class EraserTool(Tool):
         self.mouse_down = False
         brush.t.penup()
         brush.t.width(brush.width)
+        brush.t.pencolor(colors[brush.color])
         self.buffer += 1
         self.move_buffer = 0
 
