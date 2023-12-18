@@ -148,6 +148,9 @@ class EraserTool(Tool):
         # draw a dot if the mouse hasnt moved
         if (x, y) == self.click_pos:
             brush.t.dot(size = brush.width * 2 - 1)
+            self.buffer += 1
+        
+        push_undo(self.buffer, brush)
         
         brush.t.pencolor(colors[brush.color])
     
@@ -160,15 +163,23 @@ class EraserTool(Tool):
         if brush.oob(x, y):
             brush.t.penup()
             self.pen_down = False
+            self.buffer += 1
         elif self.pen_down == False and self.mouse_down:
             self.pen_down = True
             brush.t.pendown()
+            self.buffer += 1
+        self.move_buffer += 1
         
         # teleport the turtle
         brush.t.setpos(x, y)
 
+        self.buffer += 1
+
         brush.screen.update()
     
+    def get_buffer(self):
+        return self.move_buffer
+
     # used for buttons
     @staticmethod
     def get_index():
@@ -399,7 +410,7 @@ class CircleTool(Tool):
     def get_index():
         return 4
 
-def push_undo(value, brush):
+def push_undo(value: int, brush):
     if sum(brush.buffer) + value > 10000:
         brush.buffer.pop(0)
     brush.buffer.append(value)
@@ -412,7 +423,7 @@ class ToolList(Enum):
     CIRCLE = 4
     TEST = 5
 
-    def get_tool(self):
+    def get_tool(self) -> Tool:
         match self:
             case ToolList.PENCIL:
                 return PencilTool()
