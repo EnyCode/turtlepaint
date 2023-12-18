@@ -230,6 +230,7 @@ class LineTool(Tool):
             self.preview.penup()
             self.preview.clear()
             self.preview.width(brush.width)
+            self.preview.pencolor(colors[brush.color])
 
             coords = (min(max(x, -brush.screen.window_width() // 2 + 110), brush.screen.window_width() // 2 - 20), max(min(y, brush.screen.window_height() // 2 - 50), -brush.screen.window_height() // 2 + 20))
 
@@ -304,6 +305,7 @@ class RectangleTool(Tool):
             self.preview.penup()
             self.preview.clear()
             self.preview.width(brush.width)
+            self.preview.pencolor(colors[brush.color])
 
             self.preview.goto(self.click_pos)
             self.preview.pendown()
@@ -387,6 +389,7 @@ class CircleTool(Tool):
             self.preview.penup()
             self.preview.clear()
             self.preview.width(brush.width)
+            self.preview.pencolor(colors[brush.color])
 
             self.preview.goto(self.click_pos)
             
