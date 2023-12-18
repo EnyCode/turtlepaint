@@ -415,7 +415,7 @@ class CircleTool(Tool):
             push_undo(725, brush)
 
             print(brush.buffer)
-        self.dragging = False
+            self.dragging = False
 
     def follow_mouse(self, x, y, brush: "brush.Brush"):
         if self.dragging:
