@@ -55,6 +55,7 @@ class PencilTool(Tool):
     # used for undo
     buffer: int = 0
     move_buffer: int = 0
+    save_buffer: int = 0
 
     def cursor_down(self, x, y, brush: "brush.Brush"):
         if not brush.oob(x, y):
@@ -64,6 +65,7 @@ class PencilTool(Tool):
             brush.t.pendown()
             self.click_pos = brush.t.pos()
             self.buffer = 1 + self.move_buffer
+            self.save_buffer = 0
     
     def cursor_up(self, x, y, brush: "brush.Brush"):
         self.pen_down = False
@@ -78,7 +80,7 @@ class PencilTool(Tool):
             self.buffer += 1
         
         #brush.buffer.append(self.buffer)
-        push_undo(self.buffer, brush)
+        push_undo(self.buffer, self.save_buffer, brush)
 
         print(brush.t.undobufferentries())
         print(brush.buffer)
@@ -88,6 +90,7 @@ class PencilTool(Tool):
             pass
         else:
             brush.draw_data.append([brush.t.pos(), brush.color, brush.width if self.pen_down else 0])
+            self.save_buffer += 1
 
         if brush.oob(x, y):
             brush.t.penup()
@@ -234,7 +237,7 @@ class LineTool(Tool):
 
             brush.screen.update()
 
-            push_undo(self.buffer, brush)
+            push_undo(self.buffer, 3, brush)
 
             brush.draw_data.append([coords, brush.color, brush.width])
             brush.draw_data.append([coords, brush.color, 0])
@@ -449,10 +452,13 @@ class CircleTool(Tool):
     def get_index():
         return 4
 
-def push_undo(value: int, brush: "brush.Brush"):
-    if sum(brush.buffer) + value > 10000:
+def push_undo(turtle_undo: int, save_undo: int, brush: "brush.Brush"):
+    total = 0
+    for x in brush.buffer:
+        total += x[0]
+    if total + turtle_undo > 10000:
         brush.buffer.pop(0)
-    brush.buffer.append(value)
+    brush.buffer.append((turtle_undo, save_undo))
 
 class ToolList(Enum):
     PENCIL = 0

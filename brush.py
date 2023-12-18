@@ -14,7 +14,9 @@ class Brush():
     draw_data: list[list[Any]] = [[(0, 0), 0, 0]]
 
     # used for undo
-    buffer: list[int] = [0]
+    # 0 -> turtle undo
+    # 1 -> draw data undo
+    buffer: list[tuple[int, int]] = [(0, 0)]
 
     # out of bounds check
     def oob(self, x: float, y: float) -> bool:

@@ -55,8 +55,9 @@ def undo(event: Event):
 
     if len(brush.buffer) > 0:
         print(brush.buffer, brush.tool.get_buffer())
-        for x in range(brush.buffer[-1] + brush.tool.get_buffer()):
+        for x in range(brush.buffer[-1][0] + brush.tool.get_buffer()):
             t.undo()
+        brush.draw_data = brush.draw_data[:-brush.buffer[-1][1]]
         brush.buffer.pop()
         brush.tool.reset_buffer()
 
