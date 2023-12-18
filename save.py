@@ -5,7 +5,7 @@ import os
 import ui
 from tkinter import filedialog as fd
 
-def save_canvas(brush):
+def save_canvas(brush: config.Brush):
     # TODO: tell the user it has saved
 
     print("saving...")
@@ -22,7 +22,7 @@ def save_canvas(brush):
     print("saved")
 
 
-def load_canvas(brush):
+def load_canvas(brush: config.Brush):
     print("loading...")
     brush.t.clear()
     brush.loading.clear()

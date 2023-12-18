@@ -5,90 +5,46 @@ from abc import abstractmethod, abstractstaticmethod
 
 class Tool():
     @abstractmethod
-    def cursor_down(self, x, y, brush):
-        """
-        Runs when the left mouse button is clicked. 
-
-        Keyword arguments:
-        self -- the tool
-        x -- the x position of the mouse click
-        y -- the y position of the mouse click
-        brush -- the brush object
-        """
+    def cursor_down(self, x: float, y: float, brush: config.Brush):
+        """Runs when the left mouse button is clicked. """
         return NotImplementedError
 
     @abstractmethod
-    def cursor_up(self, x, y, brush):
-        """
-        Runs when the left mouse button is released.
-
-        Keyword arguments:
-        self -- the tool
-        x -- the x position of the mouse click
-        y -- the y position of the mouse click
-        brush -- the brush object
-        """
+    def cursor_up(self, x: float, y: float, brush: config.Brush):
+        """Runs when the left mouse button is released."""
         return NotImplementedError
 
     @abstractmethod
-    def follow_mouse(self, x, y, brush):
-        """
-        Called when the mouse moves. 
-
-        Keyword arguments:
-        self -- the tool
-        x -- the x position of the mouse click
-        y -- the y position of the mouse click
-        brush -- the brush object
-        """
+    def follow_mouse(self, x: float, y: float, brush: config.Brush):
+        """Called when the mouse moves. """
         return NotImplementedError
 
     @abstractmethod
     def get_index():
-        """
-        Return the index of the tool in the list
-
-        Keyword arguments:
-        self -- the tool
-        
-        Returns:
-        the index of the tool (int)
-        """
+        """Return the index of the tool in the list. Used for drawing the ui."""
         return NotImplementedError
 
     @abstractmethod
-    def get_buffer(self):
-        """
-        Return the undo buffer for the tool
-        
-        Keyword arguments:
-        self -- the tool
-        
-        Returns:
-        the undo buffer (int)
-        """
+    def get_buffer(self) -> int:
+        """Return the undo buffer for the tool"""
     
     def reset_buffer(self):
-        """
-        Reset the move buffer
-        
-        Keyword arguments:
-        self -- the tool
-        """
+        """Reset the move buffer"""
+        # use pass because it's not necessary for every tool
         pass
 
 class PencilTool(Tool):
     # is the turtle pen down
-    pen_down = False
+    pen_down: bool = False
     # is the left mouse button down
-    mouse_down = False
+    mouse_down: bool = False
 
     # used to check if the cursor hasnt moved for dots
-    click_pos = (0, 0)
+    click_pos: (float, float) = (0., 0.)
 
     # used for undo
-    buffer = 0
-    move_buffer = 0
+    buffer: int = 0
+    move_buffer: int = 0
 
     def cursor_down(self, x, y, brush):
         if not brush.oob(x, y):

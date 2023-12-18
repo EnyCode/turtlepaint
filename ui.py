@@ -2,8 +2,9 @@ import turtle
 import math
 import save
 from config import *
+from tkinter import Event
 
-ui = turtle.Turtle()
+ui: turtle.Turtle = turtle.Turtle()
 
 ui.width(3)
 ui.speed(-1)
@@ -12,27 +13,27 @@ ui.speed(-1)
 #screen.title("Turtle Paint")
 #screen.setup(1300, 900)
 
-cl_size = 30
+cl_size: int = 30
 
 # we need this to fix a recursion bug
-dragging = False
+dragging: bool = False
 
 # coordinates
 # these are stored for each updated component so we can quickly
 # teleport back and update it
-color_coords = (0, 0)
-button_coords = (0, 0)
-width_coords = (0, 0)
+color_coords: (float, float) = (0, 0)
+button_coords: (float, float) = (0, 0)
+width_coords: (float, float) = (0, 0)
 
 # slider information 
-slider_dragged = False
-slider_pos = (0, 0)
+slider_dragged: bool = False
+slider_pos: (float, float) = (0, 0)
 
 #cv = screen.getcanvas()
 #cv.bind("<Configure>", lambda event : draw_ui())
 #cv.bind("<Motion>", lambda event : drag_slider(cv.canvasx(event.x), cv.canvasy(event.y)))
 
-def draw_ui(brush):
+def draw_ui(brush: Brush):
     global color_coords, button_coords, width_coords, buttons, slider_pos
     ui.clear()
 
@@ -487,7 +488,7 @@ def draw_ui(brush):
     ui.left(90)
 
     # colors
-    size = cl_size * 2 + 3
+    size: int = cl_size * 2 + 3
 
     # draw currently selected color
     # outline
@@ -659,16 +660,16 @@ def draw_ui(brush):
 
     brush.screen.update()
 
-def on_click(x, y, screen, t, brush):
+def on_click(x: float, y: float, brush: Brush):
     global color_coords
 
     # slider
     cursor_down(x, y)
 
     # handle colors
-    if (-screen.window_width() // 2 + 20) < x < (-screen.window_width() // 2 + 86) and (screen.window_height() // 2 - 766) < y < (screen.window_height() // 2 - 304):
-        row = 13 - math.floor((y - (screen.window_height() // 2 - 766)) / 33)
-        column = math.floor((x - (-screen.window_width() // 2 + 20)) / 33)
+    if (-brush.screen.window_width() // 2 + 20) < x < (-brush.screen.window_width() // 2 + 86) and (brush.screen.window_height() // 2 - 766) < y < (brush.screen.window_height() // 2 - 304):
+        row = 13 - math.floor((y - (brush.screen.window_height() // 2 - 766)) / 33)
+        column = math.floor((x - (-brush.screen.window_width() // 2 + 20)) / 33)
         brush.color = column * 14 + row
 
         ui.penup()
@@ -683,19 +684,21 @@ def on_click(x, y, screen, t, brush):
         
         ui.end_fill()
 
-        screen.update()
+        brush.screen.update()
 
-        t.pencolor(colors[brush.color])
+        brush.t.pencolor(colors[brush.color])
     
     # handle tools
-    elif (-screen.window_width() // 2 + 7) < x < (-screen.window_width() // 2 + 99) and (screen.window_height() // 2 - 194) < y < (screen.window_height() // 2 - 56):
-        column = 2 - math.floor((y - (screen.window_height() // 2 - 194)) / 46)
-        row = math.floor((x - (-screen.window_width() // 2 + 7)) / 46)
+    elif (-brush.screen.window_width() // 2 + 7) < x < (-brush.screen.window_width() // 2 + 99) and (brush.screen.window_height() // 2 - 194) < y < (brush.screen.window_height() // 2 - 56):
+        column = 2 - math.floor((y - (brush.screen.window_height() // 2 - 194)) / 46)
+        row = math.floor((x - (-brush.screen.window_width() // 2 + 7)) / 46)
 
+        # clear button
         if column * 2 + row == 5:
             brush.draw_data = [[(0, 0), 0, 0]]
             brush.t.clear()
             brush.loading.clear()
+            brush.buffer = []
         else:
             if len(brush.buffer) > 0:
                 brush.buffer[-1] += brush.tool.get_buffer() - 2
@@ -720,33 +723,33 @@ def on_click(x, y, screen, t, brush):
                 ui.forward(46)
                 ui.left(90)
 
-        screen.update()
+        brush.screen.update()
     
     # handle close button
-    elif (screen.window_width() // 2 - 44) < x < (screen.window_width() // 2 - 15) and (screen.window_height() // 2 - 35) < y < (screen.window_height() - 6):
+    elif (brush.screen.window_width() // 2 - 44) < x < (brush.screen.window_width() // 2 - 15) and (brush.screen.window_height() // 2 - 35) < y < (brush.screen.window_height() - 6):
         print("Closing Turtle Paint...")
-        screen.bye()
+        brush.screen.bye()
     
     # handle save/load buttons
-    elif (-screen.window_width() // 2 + 11) < x < (-screen.window_width() // 2 + 95) and (screen.window_height() // 2 - 853) < y < (screen.window_height() // 2 - 781):
+    elif (-brush.screen.window_width() // 2 + 11) < x < (-brush.screen.window_width() // 2 + 95) and (brush.screen.window_height() // 2 - 853) < y < (brush.screen.window_height() // 2 - 781):
         # save
-        if (screen.window_height() // 2 - 817) < y < (screen.window_height() // 2 - 778):
+        if (brush.screen.window_height() // 2 - 817) < y < (brush.screen.window_height() // 2 - 778):
             save.save_canvas(brush)
         # load
-        elif (screen.window_height() // 2 - 862) < y < (screen.window_height() // 2 - 817):
+        elif (brush.screen.window_height() // 2 - 862) < y < (brush.screen.window_height() // 2 - 817):
             save.load_canvas(brush)
 
 # handles sliders
-def cursor_down(x, y):
+def cursor_down(x: float, y: float):
     global slider_pos, slider_dragged
     if slider_pos[0] < x < slider_pos[0] + 15 and slider_pos[1] - 18 < y < slider_pos[1] + 9:
         slider_dragged = True
 
-def cursor_up(event):
+def cursor_up(event: Event):
     global slider_dragged
     slider_dragged = False
 
-def drag_slider(x, y, brush):
+def drag_slider(x: float, y, brush: Brush):
     global width_coords, slider_pos, slider_dragged
     if slider_dragged:
         adjust = min(61, max(0, x - width_coords[0] - 6))

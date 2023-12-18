@@ -2,6 +2,7 @@ import turtle
 import os
 import pickle
 import time
+from tkinter import Event
 
 import ui
 from config import *
@@ -23,14 +24,14 @@ loading = False
 dragging = False
 
 
-def brush_down(x, y):
+def brush_down(x: float, y: float):
     global brush
 
     ui.on_click(x, y, screen, t, brush)
 
     brush.tool.cursor_down(x, y, brush)
 
-def brush_up(event):
+def brush_up(event: Event):
     global brush
 
     x, y = canvas.canvasx(event.x), -canvas.canvasy(event.y)
@@ -39,7 +40,7 @@ def brush_up(event):
 
     brush.tool.cursor_up(x, y, brush)
 
-def follow_mouse(event):
+def follow_mouse(event: Event):
     global brush, dragging
 
     if not dragging:
@@ -52,7 +53,7 @@ def follow_mouse(event):
 
         dragging = False
     
-def undo(event):
+def undo(event: Event):
     global brush, t, screen
 
     if len(brush.buffer) > 0:
