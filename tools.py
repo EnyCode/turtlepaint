@@ -1,4 +1,5 @@
 from typing import Any
+import brush
 from colors import colors
 import turtle
 import math
@@ -8,17 +9,17 @@ from enum import Enum
 # we cant type brush as Brush because of circular imports
 class Tool():
     @abstractmethod
-    def cursor_down(self, x: float, y: float, brush: Any):
+    def cursor_down(self, x: float, y: float, brush: "brush.Brush"):
         """Runs when the left mouse button is clicked. """
         raise NotImplementedError
 
     @abstractmethod
-    def cursor_up(self, x: float, y: float, brush: Any):
+    def cursor_up(self, x: float, y: float, brush: "brush.Brush"):
         """Runs when the left mouse button is released."""
         raise NotImplementedError
 
     @abstractmethod
-    def follow_mouse(self, x: float, y: float, brush: Any):
+    def follow_mouse(self, x: float, y: float, brush: "brush.Brush"):
         """Called when the mouse moves. """
         raise NotImplementedError
 
@@ -26,12 +27,17 @@ class Tool():
     def get_index() -> int:
         """Return the index of the tool in the list. Used for drawing the ui."""
         raise NotImplementedError
+    
+    @abstractstaticmethod
+    def show_turtle() -> bool:
+        """Return whether the turtle should be shown or not"""
+        return False
 
     @abstractmethod
     def get_buffer(self) -> int:
         """Return the undo buffer for the tool"""
         raise NotImplementedError
-    
+
     def reset_buffer(self):
         """Reset the move buffer"""
         # use pass because it's not necessary for every tool
@@ -50,7 +56,7 @@ class PencilTool(Tool):
     buffer: int = 0
     move_buffer: int = 0
 
-    def cursor_down(self, x, y, brush):
+    def cursor_down(self, x, y, brush: "brush.Brush"):
         if not brush.oob(x, y):
             print(brush.t.undobufferentries() - self.move_buffer)
             self.pen_down = True
@@ -59,7 +65,7 @@ class PencilTool(Tool):
             self.click_pos = brush.t.pos()
             self.buffer = 1 + self.move_buffer
     
-    def cursor_up(self, x, y, brush):
+    def cursor_up(self, x, y, brush: "brush.Brush"):
         self.pen_down = False
         self.mouse_down = False
         brush.t.penup()
@@ -77,7 +83,7 @@ class PencilTool(Tool):
         print(brush.t.undobufferentries())
         print(brush.buffer)
     
-    def follow_mouse(self, x, y, brush):
+    def follow_mouse(self, x, y, brush: "brush.Brush"):
         if not self.pen_down and brush.draw_data[-1][2] == 0:
             pass
         else:
@@ -125,7 +131,7 @@ class EraserTool(Tool):
     buffer: int = 0
     move_buffer: int = 0
 
-    def cursor_down(self, x, y, brush):
+    def cursor_down(self, x, y, brush: "brush.Brush"):
         print(x)
         brush.t.pencolor("white")
         brush.t.width(brush.width * 2)
@@ -137,7 +143,7 @@ class EraserTool(Tool):
             self.click_pos = brush.t.pos()
             self.buffer = 1 + self.move_buffer
     
-    def cursor_up(self, x, y, brush):
+    def cursor_up(self, x, y, brush: "brush.Brush"):
         self.pen_down = False
         self.mouse_down = False
         brush.t.penup()
@@ -155,7 +161,7 @@ class EraserTool(Tool):
         
         brush.t.pencolor(colors[brush.color])
     
-    def follow_mouse(self, x, y, brush):
+    def follow_mouse(self, x, y, brush: "brush.Brush"):
         if not self.pen_down and brush.draw_data[-1][2] == 0:
             pass
         else:
@@ -201,7 +207,7 @@ class LineTool(Tool):
         self.preview = turtle.Turtle()
         self.preview.hideturtle()
 
-    def cursor_down(self, x, y, brush):
+    def cursor_down(self, x, y, brush: "brush.Brush"):
         if not brush.oob(x, y):
             brush.t.penup()
             brush.t.setpos(x, y)
@@ -209,7 +215,7 @@ class LineTool(Tool):
             self.dragging = True
             self.buffer = 0
     
-    def cursor_up(self, x, y, brush):
+    def cursor_up(self, x, y, brush: "brush.Brush"):
         if self.dragging:
             brush.t.penup()
             brush.t.goto(self.click_pos)
@@ -226,7 +232,7 @@ class LineTool(Tool):
 
             print(brush.buffer)
     
-    def follow_mouse(self, x, y, brush):
+    def follow_mouse(self, x, y, brush: "brush.Brush"):
         if self.dragging:
             self.preview.penup()
             self.preview.clear()
@@ -263,15 +269,16 @@ class RectangleTool(Tool):
 
     def __init__(self):
         self.preview = turtle.Turtle()
+        self.preview.hideturtle()
 
-    def cursor_down(self, x, y, brush):
+    def cursor_down(self, x, y, brush: "brush.Brush"):
         if not brush.oob(x, y):
             brush.t.penup()
             brush.t.setpos(x, y)
             self.click_pos = brush.t.pos()
             self.dragging = True
 
-    def cursor_up(self, x, y, brush):
+    def cursor_up(self, x, y, brush: "brush.Brush"):
         if self.dragging:
             brush.t.penup()
             brush.t.goto(self.click_pos)
@@ -301,7 +308,7 @@ class RectangleTool(Tool):
 
             brush.screen.update()
 
-    def follow_mouse(self, x, y, brush):
+    def follow_mouse(self, x, y, brush: "brush.Brush"):
         if self.dragging:
             self.preview.penup()
             self.preview.clear()
@@ -351,8 +358,9 @@ class CircleTool(Tool):
 
     def __init__(self):
         self.preview = turtle.Turtle()
+        self.preview.hideturtle()
 
-    def cursor_down(self, x, y, brush):
+    def cursor_down(self, x, y, brush: "brush.Brush"):
         if not brush.oob(x, y):
             print(brush.t.undobufferentries())
             brush.t.penup()
@@ -360,7 +368,7 @@ class CircleTool(Tool):
             self.click_pos = brush.t.pos()
             self.dragging = True
 
-    def cursor_up(self, x, y, brush):
+    def cursor_up(self, x, y, brush: "brush.Brush"):
         if self.dragging:
             brush.t.penup()
             brush.t.goto(self.click_pos)
@@ -389,7 +397,7 @@ class CircleTool(Tool):
             print(brush.buffer)
         self.dragging = False
 
-    def follow_mouse(self, x, y, brush):
+    def follow_mouse(self, x, y, brush: "brush.Brush"):
         if self.dragging:
             self.preview.penup()
             self.preview.clear()
@@ -424,7 +432,7 @@ class CircleTool(Tool):
     def get_index():
         return 4
 
-def push_undo(value: int, brush):
+def push_undo(value: int, brush: "brush.Brush"):
     if sum(brush.buffer) + value > 10000:
         brush.buffer.pop(0)
     brush.buffer.append(value)
