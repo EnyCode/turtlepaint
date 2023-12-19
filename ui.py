@@ -9,6 +9,9 @@ from tools import ToolList
 
 ui: turtle.Turtle = turtle.Turtle()
 
+# for holding clear, save and load buttons
+held_button = None
+
 ui.width(3)
 ui.speed(-1)
 
@@ -27,6 +30,9 @@ dragging = False
 color_coords = (0., 0.)
 button_coords = (0., 0.)
 width_coords = (0., 0.)
+save_coords = (0., 0.)
+load_coords = (0., 0.)
+clear_coords = (0., 0.)
 
 # slider information 
 slider_dragged = False
@@ -37,7 +43,7 @@ slider_pos = (0., 0.)
 #cv.bind("<Motion>", lambda event : drag_slider(cv.canvasx(event.x), cv.canvasy(event.y)))
 
 def draw_ui(brush: Brush):
-    global color_coords, button_coords, width_coords, buttons, slider_pos
+    global color_coords, button_coords, width_coords, save_coords, load_coords, clear_coords, buttons, slider_pos
     ui.clear()
 
     ui.penup()
@@ -421,6 +427,8 @@ def draw_ui(brush: Brush):
 
     for row in range(rows):
         for button in buttons[(row * 2):(row * 2 + 2)]:
+            if buttons.index(button) == 5:
+                clear_coords = ui.pos()
             if buttons.index(button) == brush.tool.get_index():
                 button.paint_selected_button(ui)
             else: 
@@ -651,6 +659,7 @@ def draw_ui(brush: Brush):
 
     save = SaveButton()
     load = LoadButton()
+    save_coords = ui.pos()
     save.paint_button(ui)
 
     ui.penup()
@@ -658,13 +667,14 @@ def draw_ui(brush: Brush):
     ui.right(90)
     ui.forward(36)
     ui.left(90)
-
+    load_coords = ui.pos()
+    
     load.paint_button(ui)
 
     brush.screen.update()
 
 def on_click(x: float, y: float, brush: Brush):
-    global color_coords
+    global color_coords, save_coords, load_coords, clear_coords, held_button
 
     # slider
     cursor_down(x, y)
@@ -702,6 +712,11 @@ def on_click(x: float, y: float, brush: Brush):
             brush.t.clear()
             brush.loading.clear()
             brush.buffer = [(0, 0)]
+            ui.penup()
+            ui.goto(clear_coords)
+            ui.pendown()
+            UiButton().paint_selected_button(ui)
+            held_button = 2
         else:
             if len(brush.buffer) > 0:
                 brush.buffer[-1] = (brush.buffer[-1][0] + brush.tool.get_buffer() - 2, brush.buffer[-1][0])
@@ -747,9 +762,19 @@ def on_click(x: float, y: float, brush: Brush):
     elif (-brush.screen.window_width() // 2 + 11) < x < (-brush.screen.window_width() // 2 + 95) and (brush.screen.window_height() // 2 - 853) < y < (brush.screen.window_height() // 2 - 781):
         # save
         if (brush.screen.window_height() // 2 - 817) < y < (brush.screen.window_height() // 2 - 778):
+            ui.penup()
+            ui.goto(save_coords[0], save_coords[1] - 1)
+            ui.pendown()
+            SaveButton().paint_selected_button(ui)
+            held_button = 0
             save.save_canvas(brush)
         # load
         elif (brush.screen.window_height() // 2 - 862) < y < (brush.screen.window_height() // 2 - 817):
+            ui.penup()
+            ui.goto(load_coords[0], load_coords[1] - 1)
+            ui.pendown()
+            LoadButton().paint_selected_button(ui)
+            held_button = 1
             save.load_canvas(brush)
 
 # handles sliders
@@ -759,8 +784,28 @@ def cursor_down(x: float, y: float):
         slider_dragged = True
 
 def cursor_up(event: Event):
-    global slider_dragged
+    global slider_dragged, held_button, save_coords, load_coords, clear_coords
     slider_dragged = False
+    match held_button:
+        case 0:
+            ui.penup()
+            ui.goto(save_coords[0], save_coords[1] + 1)
+            ui.pendown()
+            SaveButton().paint_button(ui)
+            held_button = None
+        case 1:
+            ui.penup()
+            ui.goto(load_coords[0], load_coords[1] + 1)
+            ui.pendown()
+            LoadButton().paint_button(ui)
+            held_button = None
+        case 2:
+            ui.penup()
+            ui.goto(clear_coords)
+            ui.pendown()
+            UiButton().paint_button(ui)
+            held_button = None
+            
 
 def drag_slider(x: float, y, brush: Brush):
     global width_coords, slider_pos, slider_dragged
