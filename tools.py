@@ -138,6 +138,7 @@ class EraserTool(Tool):
     # used for undo
     buffer: int = 0
     move_buffer: int = 0
+    save_buffer: int = 0
 
     def cursor_down(self, x, y, brush: "brush.Brush"):
         brush.t.pencolor("white")
@@ -149,6 +150,7 @@ class EraserTool(Tool):
             brush.t.pendown()
             self.click_pos = brush.t.pos()
             self.buffer = 1 + self.move_buffer
+            self.save_buffer = 0
     
     def cursor_up(self, x, y, brush: "brush.Brush"):
         self.pen_down = False
@@ -164,7 +166,7 @@ class EraserTool(Tool):
             brush.t.dot(size = brush.width * 2 - 1)
             self.buffer += 1
         
-        push_undo(self.buffer, brush)
+        push_undo(self.buffer, self.save_buffer, brush)
         
         brush.t.pencolor(colors[brush.color])
     
@@ -173,6 +175,7 @@ class EraserTool(Tool):
             pass
         else:
             brush.draw_data.append([brush.t.pos(), 14, brush.width if self.pen_down else 0])
+            self.save_buffer += 1
 
         if brush.oob(x, y):
             brush.t.penup()
@@ -319,7 +322,7 @@ class RectangleTool(Tool):
             self.dragging = False
             self.preview.clear()
 
-            push_undo(12, brush)
+            push_undo(12, 6, brush)
 
             print(brush.buffer)
 
@@ -390,7 +393,9 @@ class CircleTool(Tool):
             brush.t.penup()
             brush.t.goto(self.click_pos)
 
-            difference = min(abs(x - self.click_pos[0]), abs(y - self.click_pos[1]))
+            coords = min(max(x, -brush.screen.window_width() // 2 + 110), brush.screen.window_width() // 2 - 20), max(min(y, brush.screen.window_height() // 2 - 50), -brush.screen.window_height() // 2 + 20)
+            
+            difference = min(abs(coords[0] - self.click_pos[0]), abs(coords[1] - self.click_pos[1]))
             c = math.pi * difference
 
             if y > self.click_pos[1]:
@@ -413,7 +418,7 @@ class CircleTool(Tool):
 
             brush.screen.update()
 
-            push_undo(725, brush)
+            push_undo(725, 362, brush)
 
             print(brush.buffer)
             self.dragging = False
@@ -426,8 +431,10 @@ class CircleTool(Tool):
             self.preview.pencolor(colors[brush.color])
 
             self.preview.goto(self.click_pos)
+
+            coords = min(max(x, -brush.screen.window_width() // 2 + 110), brush.screen.window_width() // 2 - 20), max(min(y, brush.screen.window_height() // 2 - 50), -brush.screen.window_height() // 2 + 20)
             
-            difference = min(abs(x - self.click_pos[0]), abs(y - self.click_pos[1]))
+            difference = min(abs(coords[0] - self.click_pos[0]), abs(coords[1] - self.click_pos[1]))
             c = math.pi * difference
 
             if y > self.click_pos[1]:
