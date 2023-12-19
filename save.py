@@ -30,7 +30,7 @@ def save_canvas(brush: Brush):
 
 def load_canvas(brush: Brush):
     print("loading...")
-    file = fd.askopenfile(mode="rb", filetypes=[("Turtle Paint File", ".tpf")])
+    file = fd.askopenfile(mode="rb", filetypes=[("Turtle Paint File (.tpf)", ".tpf")])
     if file is None:
         print("cancelled...")
     else:
