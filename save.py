@@ -10,7 +10,7 @@ def save_canvas(brush: Brush):
 
     print("saving...")
 
-    file = fd.asksaveasfile(mode="wb", filetypes=[("Turtle Paint File", ".tpf")])
+    file = fd.asksaveasfile(mode="wb", filetypes=[("Turtle Paint File", ".tpf")], defaultextension=".tpf")
     if file is None:
         print("cancelled...")
     else:
