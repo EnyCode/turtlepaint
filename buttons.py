@@ -118,11 +118,34 @@ class UiButton:
         if name != "UiButton":
             print(name, "must override the paint_icon(self, t) function")
 
-    def on_click(self):
-        name: str = type(self).__name__
+class LineButton(UiButton):
+    def paint_icon(self, t: Turtle):
+        width = t.width()
+        t.width(4)
+        t.penup()
+        t.backward(18)
+        t.right(90)
+        t.forward(8)
+        t.right(35)
+        t.pendown()
+        t.pencolor(outline)
+        t.forward(30)
+        t.penup()
+        t.backward(30)
+        t.left(35)
+        t.backward(8)
+        t.left(90)
+        t.forward(18)
+        t.width(width)
 
-        if name != "UiButton":
-            print(name, "must override the paint_icon(self, t) function")
+class RectangleButton(UiButton):
+    def paint_icon(self, t: Turtle):
+        width = t.width()
+        t.width(4)
+        t.penup()
+        t.backward(8)
+        t.right(90)
+        t.forward(8)
 
 class PressButton(UiButton):
     width: int = 80
@@ -232,7 +255,7 @@ class PressButton(UiButton):
         t.right(90)
 
 # button list
-buttons: list[UiButton] = [UiButton(), UiButton(), UiButton(), UiButton(), UiButton(), UiButton()]
+buttons: list[UiButton] = [UiButton(), UiButton(), LineButton(), UiButton(), UiButton(), UiButton()]
 
 class SaveButton(PressButton):
     def paint_icon(self, t: Turtle):
